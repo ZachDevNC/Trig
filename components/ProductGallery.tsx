@@ -67,7 +67,7 @@ export function ProductGallery({
       </div>
 
       {multi ? (
-        <ul className="mt-3 flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
+        <ul className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
           {images.map((src, i) => {
             const selected = i === active;
             return (

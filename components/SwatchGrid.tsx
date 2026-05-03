@@ -60,7 +60,7 @@ export function SwatchGrid({
         {filtered.map((c) => {
           const selected = c.id === selectedId;
           return (
-            <li key={c.id}>
+            <li key={c.id} className="min-w-0">
               <button
                 onClick={() => onSelect(c)}
                 className={`group relative w-full text-left rounded-xl overflow-hidden transition ${
@@ -78,11 +78,11 @@ export function SwatchGrid({
                   }
                   aria-hidden
                 />
-                <span className="block px-2 py-2">
-                  <span className="block text-[11px] uppercase tracking-wide text-black/40">
+                <span className="block px-2 py-2 min-w-0">
+                  <span className="block text-[11px] uppercase tracking-wide text-black/40 truncate">
                     {c.cover}
                   </span>
-                  <span className="block text-[13px] leading-tight">{c.color}</span>
+                  <span className="block text-[13px] leading-tight truncate">{c.color}</span>
                 </span>
                 {selected ? (
                   <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-white text-[10px]">
