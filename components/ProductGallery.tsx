@@ -67,15 +67,15 @@ export function ProductGallery({
       </div>
 
       {multi ? (
-        <ul className="mt-3 flex gap-2">
+        <ul className="mt-3 flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
           {images.map((src, i) => {
             const selected = i === active;
             return (
-              <li key={src}>
+              <li key={src} className="shrink-0">
                 <button
                   onClick={() => setActive(i)}
                   aria-label={`View ${i + 1} of ${images.length}`}
-                  className={`block w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white transition ${
+                  className={`block w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white transition ${
                     selected ? "ring-2 ring-accent" : "ring-1 ring-black/10 hover:ring-black/30"
                   }`}
                 >
