@@ -8,6 +8,7 @@ import { covers as allCovers, priceFor } from "@/lib/catalog";
 import { gradeToTier, tierLabel } from "@/lib/tiers";
 import { SwatchGrid } from "@/components/SwatchGrid";
 import { OptionPicker } from "@/components/OptionPicker";
+import { ProductGallery } from "@/components/ProductGallery";
 
 const formatUSD = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -62,11 +63,9 @@ export function ProductView({ frame }: { frame: Frame }) {
       <div className="mt-4 grid lg:grid-cols-[1.05fr_1fr] gap-10">
         {/* Hero column */}
         <div className="lg:sticky lg:top-6 self-start">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={frame.heroImage}
+          <ProductGallery
+            images={frame.heroImages?.length ? frame.heroImages : [frame.heroImage]}
             alt={frame.name}
-            className="w-full aspect-[4/3] object-cover rounded-2xl shadow-card bg-white"
           />
 
           {selectedCover ? (

@@ -42,6 +42,8 @@ export type Frame = {
   shortDescription: string;
   features?: string[];
   heroImage: string;
+  // Optional product gallery. Falls back to [heroImage] when absent.
+  heroImages?: string[];
   // wholesale price keyed by GradeKey ("Leather C", "Fabric I", ...)
   wholesale: Partial<Record<GradeKey, number>>;
   // C.O.M./C.O.L. price overrides (default to Fabric I / Leather D/F)

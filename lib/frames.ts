@@ -43,6 +43,11 @@ const PARKER_OPTIONS = [
 // Other Parker SKUs still use placeholders pending dedicated photos.
 const PARKER_HERO =
   "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7949/AL25_Chair_Parker_45__21938.1760974881.jpg?c=2";
+const PARKER_GALLERY = [
+  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7949/AL25_Chair_Parker_45__21938.1760974881.jpg?c=2",
+  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7950/AL25_Chair_Parker_Side__09427.1760974886.jpg?c=2",
+  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7951/AL25_Chair_Parker_Front__42041.1760974892.jpg?c=2",
+];
 const SOFA_HERO =
   "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=80";
 const OTTOMAN_HERO =
@@ -64,6 +69,7 @@ export const frames: Frame[] = [
       "Sculpted lounge chair with a tailored silhouette and buttonless tufted cushions.",
     features: PARKER_FEATURES,
     heroImage: PARKER_HERO,
+    heroImages: PARKER_GALLERY,
     wholesale: {
       "Leather C":   1700,
       "Leather D/F": 1775,
