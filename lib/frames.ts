@@ -47,33 +47,18 @@ const PARKER_GALLERY = [
   "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7950/AL25_Chair_Parker_Side__09427.1760974886.jpg?c=2",
   "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7951/AL25_Chair_Parker_Front__42041.1760974892.jpg?c=2",
 ];
-const SOFA_GALLERY = [
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/161/5830/AL_Web_Sofas_Front_Angle_45_Parker__03800__48965.1689954957.jpg?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/161/4574/AL_Web_Sofas_Front_Parker__32247.1689954951.jpg?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/161/5834/Parker-SO2-Fabric-45-Front_1__83008__98833.1689954969.jpg?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/161/5837/RM-Parker.LTH-HR__43952__30484.1689954990.jpg?c=2",
-];
-const SOFA_HERO = SOFA_GALLERY[0];
-
-const OTTOMAN_GALLERY = [
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1502/7956/AL25_Ottoman_Parker_45__29552.1760975044.jpg?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1502/7955/AL25_Ottoman_Parker_Front__49845.1760975038.jpg?c=2",
-];
-const OTTOMAN_HERO = OTTOMAN_GALLERY[0];
-
-const CHAISE_GALLERY = [
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/918/3556/Parker-Chaise-Lounge-Sectional__66202.1689954808.jpg?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/918/3557/Parker-Sectional-Chase-Talent__26215.1689954786.jpg?c=2",
-];
-const CHAISE_HERO = CHAISE_GALLERY[0];
-
-const CORNER_GALLERY = [
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/918/4900/PARKER_SECTIONAL__14290.1689954745.JPG?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/918/4899/PARKER_SECTIONAL2__92748.1689954750.JPG?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/918/3555/Parker-Sectional-Leather__85888.1689954770.jpg?c=2",
-  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/918/5233/Parker-Bison_White_1__75125.1689954801.jpg?c=2",
-];
-const CORNER_HERO = CORNER_GALLERY[0];
+// Other Parker SKUs use Unsplash placeholders pending real per-SKU
+// product photography (the AL site only has Parker Chair shots that
+// match this catalog 1:1 — sofa/sectional/ottoman pages show different
+// SKUs).
+const SOFA_HERO =
+  "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=80";
+const OTTOMAN_HERO =
+  "https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&w=1600&q=80";
+const CHAISE_HERO =
+  "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=1600&q=80";
+const CORNER_HERO =
+  "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1600&q=80";
 
 export const frames: Frame[] = [
   {
@@ -112,7 +97,6 @@ export const frames: Frame[] = [
       "Two-seat mid-size sofa. Ideal for apartments and second seating arrangements.",
     features: PARKER_FEATURES,
     heroImage: SOFA_HERO,
-    heroImages: SOFA_GALLERY,
     wholesale: {
       "Leather C":   2325,
       "Leather D/F": 2475,
@@ -137,7 +121,6 @@ export const frames: Frame[] = [
       "Compact chaise with the arm on the left as you sit. Pairs with the mid-size sofa for a sectional.",
     features: PARKER_FEATURES,
     heroImage: CHAISE_HERO,
-    heroImages: CHAISE_GALLERY,
     wholesale: {
       "Leather C":   1900,
       "Leather D/F": 2025,
@@ -162,7 +145,6 @@ export const frames: Frame[] = [
       "Standard ottoman that pairs with the Parker chair. Doubles as occasional seating.",
     features: PARKER_FEATURES,
     heroImage: OTTOMAN_HERO,
-    heroImages: OTTOMAN_GALLERY,
     wholesale: {
       "Leather C":    900,
       "Leather D/F": 1000,
@@ -187,7 +169,6 @@ export const frames: Frame[] = [
       "Corner-return sofa with the arm on the left. Anchors a room and seats four comfortably.",
     features: PARKER_FEATURES,
     heroImage: CORNER_HERO,
-    heroImages: CORNER_GALLERY,
     wholesale: {
       "Leather C":   2700,
       "Leather D/F": 2825,
