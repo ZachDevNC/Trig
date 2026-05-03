@@ -69,7 +69,7 @@ export const frames: Frame[] = [
     sku: "PKR-CHR-ST",
     comYards: 7,
     shortDescription:
-      "Sculpted lounge chair with a tailored silhouette and buttonless tufted cushions.",
+      "Inspired by classic Mid-Century design — a handsome, architectural silhouette punctuated by meticulously hand-sewn buttonless tufting for superior comfort and style.",
     features: PARKER_FEATURES,
     heroImage: PARKER_HERO,
     heroImages: PARKER_GALLERY,
