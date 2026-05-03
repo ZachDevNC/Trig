@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Cover, CoveringSelection, Frame } from "@/lib/types";
 import { useCart } from "@/lib/cart";
 import { covers as allCovers, priceFor } from "@/lib/catalog";
-import { gradeToTier, tierLabel } from "@/lib/tiers";
+import { coverTierLabel } from "@/lib/tiers";
 import { SwatchGrid } from "@/components/SwatchGrid";
 import { OptionPicker } from "@/components/OptionPicker";
 import { ProductGallery } from "@/components/ProductGallery";
@@ -81,7 +81,7 @@ export function ProductView({ frame }: { frame: Frame }) {
               />
               <div className="text-sm leading-tight">
                 <div className="text-[11px] uppercase tracking-widest text-black/40">
-                  {tierLabel(gradeToTier(selectedCover.type, selectedCover.grade))}
+                  {coverTierLabel(selectedCover)}
                 </div>
                 <div className="font-medium">
                   {selectedCover.cover} <span className="text-black/50">— {selectedCover.color}</span>

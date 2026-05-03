@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Cover, CoverType } from "@/lib/types";
-import { gradeToTier, TIERS, tierLabel } from "@/lib/tiers";
+import { gradeToTier, TIERS, tierLabelWithRange } from "@/lib/tiers";
 
 type TypeFilter = "all" | CoverType;
 type TierFilter = "all" | (typeof TIERS)[number]["id"];
@@ -45,7 +45,7 @@ export function SwatchGrid({
           label="Tier"
           options={[
             { id: "all", label: "All" },
-            ...TIERS.map((t) => ({ id: t.id, label: tierLabel(t.id) })),
+            ...TIERS.map((t) => ({ id: t.id, label: tierLabelWithRange(t.id) })),
           ]}
           value={tier}
           onChange={(v) => setTier(v as TierFilter)}

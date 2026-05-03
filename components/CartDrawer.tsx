@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
 import { getCover, getFrame } from "@/lib/catalog";
-import { gradeToTier, tierLabel } from "@/lib/tiers";
+import { coverTierLabel } from "@/lib/tiers";
 
 const formatUSD = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -86,8 +86,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                   cover ? `${cover.cover} — ${cover.color}` : "—";
                 const tier =
                   cov.kind === "cover" && cover
-                    ? tierLabel(gradeToTier(cover.type, cover.grade))
-                    : cov.kind === "com" ? "Fabric — Standard" : "Leather — Classic";
+                    ? coverTierLabel(cover)
+                    : cov.kind === "com" ? "Fabric — Standard · Grade I" : "Leather — Classic · Grade D/F";
 
                 return (
                   <li key={line.lineId} className="py-4">
