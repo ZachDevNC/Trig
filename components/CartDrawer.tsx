@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useCart } from "@/lib/cart";
 import { getProduct } from "@/lib/catalog";
 
+const formatUSD = (n: number) =>
+  n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const cart = useCart();
   const [submitting, setSubmitting] = useState(false);
@@ -75,6 +78,14 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                       <div>
                         <div className="text-sm text-black/60">{product.brand}</div>
                         <div className="font-medium">{product.name}</div>
+                        {product.sku ? (
+                          <div className="text-[11px] text-black/50 font-mono">{product.sku}</div>
+                        ) : null}
+                        {typeof line.unitPrice === "number" ? (
+                          <div className="text-xs text-black/70 mt-0.5">
+                            {formatUSD(line.unitPrice)} <span className="text-black/40">× {line.quantity} = {formatUSD(line.unitPrice * line.quantity)}</span>
+                          </div>
+                        ) : null}
                       </div>
                       <div className="flex items-start gap-2">
                         <button
@@ -119,6 +130,19 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
         </section>
 
         <footer className="sticky bottom-0 bg-white border-t border-black/10 px-5 py-4 grid gap-2">
+          {cart.lines.length > 0 ? (
+            <div className="flex justify-between text-sm">
+              <span className="text-black/60">Quote total <span className="text-black/40 text-xs">(wholesale)</span></span>
+              <span className="font-medium">
+                {formatUSD(
+                  cart.lines.reduce(
+                    (sum, l) => sum + (l.unitPrice ?? 0) * l.quantity,
+                    0,
+                  ),
+                )}
+              </span>
+            </div>
+          ) : null}
           {submitted ? (
             <div className={`text-sm ${submitted.ok ? "text-green-700" : "text-red-700"}`}>{submitted.message}</div>
           ) : null}

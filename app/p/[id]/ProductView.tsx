@@ -4,7 +4,11 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart";
+import { computeUnitPrice } from "@/lib/catalog";
 import { OptionPicker } from "@/components/OptionPicker";
+
+const formatUSD = (n: number) =>
+  n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 export function ProductView({ product }: { product: Product }) {
   const cart = useCart();
@@ -12,28 +16,16 @@ export function ProductView({ product }: { product: Product }) {
   const [notes, setNotes] = useState("");
   const [justAdded, setJustAdded] = useState(false);
 
-  // Hide fabric picker when leather is chosen, and vice versa.
-  const visibleGroups = useMemo(() => {
-    const covering = selections["covering-type"];
-    return product.options.filter((g) => {
-      if (g.id === "leather" && covering && covering !== "leather") return false;
-      if (g.id === "fabric" && covering && covering !== "fabric") return false;
-      return true;
-    });
-  }, [product.options, selections]);
-
-  const missingRequired = visibleGroups
+  const missingRequired = product.options
     .filter((g) => g.required && !selections[g.id])
     .map((g) => g.label);
 
-  const upchargeTotal = visibleGroups.reduce((sum, g) => {
-    const c = g.choices.find((x) => x.id === selections[g.id]);
-    return sum + (c?.upcharge ?? 0);
-  }, 0);
+  const unitPrice = useMemo(() => computeUnitPrice(product, selections), [product, selections]);
+  const priceReady = !!product.priceFromOption && !!selections[product.priceFromOption];
 
   const handleAdd = () => {
     if (missingRequired.length > 0) return;
-    cart.addLine(product.id, selections, notes || undefined);
+    cart.addLine(product.id, selections, notes || undefined, unitPrice);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1800);
   };
@@ -60,20 +52,50 @@ export function ProductView({ product }: { product: Product }) {
               Open manufacturer 3D configurator ↗
             </a>
           ) : null}
+
+          {(product.sku || product.comYards) && (
+            <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+              {product.sku ? (
+                <>
+                  <dt className="text-black/50">SKU</dt>
+                  <dd className="font-mono">{product.sku}</dd>
+                </>
+              ) : null}
+              {product.comYards ? (
+                <>
+                  <dt className="text-black/50">C.O.M. yardage</dt>
+                  <dd>{product.comYards} yds</dd>
+                </>
+              ) : null}
+            </dl>
+          )}
+
+          {product.features?.length ? (
+            <details className="mt-4 text-sm">
+              <summary className="cursor-pointer text-black/60">Standard features</summary>
+              <ul className="mt-2 grid gap-1 text-black/70 list-disc pl-5 text-[13px]">
+                {product.features.map((f) => <li key={f}>{f}</li>)}
+              </ul>
+            </details>
+          ) : null}
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-widest text-black/50">{product.brand}</p>
+          <p className="text-xs uppercase tracking-widest text-black/50">
+            {product.brand}{product.collection ? ` · ${product.collection}` : ""}
+          </p>
           <h1 className="text-2xl font-semibold">{product.name}</h1>
-          {product.basePrice ? (
-            <p className="text-sm text-black/60 mt-1">
-              From ${product.basePrice.toLocaleString()}
-              {upchargeTotal ? <> · selected options +${upchargeTotal.toLocaleString()}</> : null}
+          {priceReady ? (
+            <p className="text-sm text-black/70 mt-1">
+              <span className="font-medium">{formatUSD(unitPrice)}</span>
+              <span className="text-black/40 ml-1.5 text-xs">wholesale</span>
             </p>
-          ) : null}
+          ) : (
+            <p className="text-sm text-black/40 mt-1">Select covering &amp; grade for pricing</p>
+          )}
           <p className="text-sm text-black/70 mt-3 max-w-prose">{product.shortDescription}</p>
 
-          {visibleGroups.map((group) => (
+          {product.options.map((group) => (
             <OptionPicker
               key={group.id}
               group={group}
@@ -88,7 +110,7 @@ export function ProductView({ product }: { product: Product }) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              placeholder="e.g. customer requested extra back support, deliver before June 1"
+              placeholder="e.g. specific leather color (Bisonte Saddle), contrast cushion fabric, delivery requirements"
               className="w-full px-3 py-2 rounded-md bg-bone/60 ring-1 ring-black/10 focus:ring-black/40 outline-none text-sm"
             />
           </section>

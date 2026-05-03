@@ -5,12 +5,16 @@ export type OptionChoice = {
   swatch?: string;       // hex color or path to small swatch image
   image?: string;        // larger preview image (e.g., a leg style render)
   note?: string;         // short helper text shown under the choice
-  upcharge?: number;     // dollar adjustment vs. base option (display only for now)
+  // Pricing: when this choice is in the product's `priceFromOption` group,
+  // its `price` becomes the line's wholesale base. Otherwise `upcharge` adds
+  // to the base.
+  price?: number;
+  upcharge?: number;
 };
 
 export type OptionGroup = {
-  id: string;            // e.g. "leather"
-  label: string;         // e.g. "Leather"
+  id: string;
+  label: string;
   kind: "swatch" | "tile" | "select"; // controls how it's rendered
   required?: boolean;
   choices: OptionChoice[];
@@ -19,11 +23,17 @@ export type OptionGroup = {
 export type Product = {
   id: string;            // slug used in URL: /p/parker-chair
   brand: string;
-  name: string;
+  collection?: string;   // e.g. "Parker"
+  name: string;          // display name e.g. "Parker Chair"
+  sku?: string;          // e.g. "PKR-CHR-ST"
+  comYards?: number;     // COM yardage required for this frame
   shortDescription: string;
-  heroImage: string;     // large hero photo
-  basePrice?: number;    // optional, display-only
+  features?: string[];   // bullet list of standard features
+  heroImage: string;
   configuratorUrl?: string; // optional manufacturer configurator embed
+  // ID of the option group whose selected choice provides the line's base
+  // price (`OptionChoice.price`). Other groups' `upcharge` values add on top.
+  priceFromOption?: string;
   options: OptionGroup[];
 };
 
@@ -35,6 +45,7 @@ export type CartLine = {
   selections: CartLineSelections;
   quantity: number;
   notes?: string;
+  unitPrice?: number;    // captured at add-to-cart for snapshot stability
   addedAt: number;
 };
 

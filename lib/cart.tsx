@@ -14,7 +14,7 @@ type CartCtx = CartState & {
   setClient: (v: string) => void;
   setRoom: (v: string) => void;
   setDesigner: (v: string) => void;
-  addLine: (productId: string, selections: CartLineSelections, notes?: string) => void;
+  addLine: (productId: string, selections: CartLineSelections, notes?: string, unitPrice?: number) => void;
   updateLine: (lineId: string, patch: Partial<Omit<CartLine, "lineId" | "addedAt">>) => void;
   removeLine: (lineId: string) => void;
   clearCart: () => void;
@@ -47,22 +47,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const setRoom = useCallback((room: string) => setState((s) => ({ ...s, room })), []);
   const setDesigner = useCallback((designer: string) => setState((s) => ({ ...s, designer })), []);
 
-  const addLine = useCallback((productId: string, selections: CartLineSelections, notes?: string) => {
-    setState((s) => ({
-      ...s,
-      lines: [
-        ...s.lines,
-        {
-          lineId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
-          productId,
-          selections,
-          quantity: 1,
-          notes,
-          addedAt: Date.now(),
-        },
-      ],
-    }));
-  }, []);
+  const addLine = useCallback(
+    (productId: string, selections: CartLineSelections, notes?: string, unitPrice?: number) => {
+      setState((s) => ({
+        ...s,
+        lines: [
+          ...s.lines,
+          {
+            lineId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+            productId,
+            selections,
+            quantity: 1,
+            notes,
+            unitPrice,
+            addedAt: Date.now(),
+          },
+        ],
+      }));
+    },
+    [],
+  );
 
   const updateLine = useCallback((lineId: string, patch: Partial<Omit<CartLine, "lineId" | "addedAt">>) => {
     setState((s) => ({
