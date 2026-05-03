@@ -46,6 +46,8 @@ const PARKER_GALLERY = [
   "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7949/AL25_Chair_Parker_45__21938.1760974881.jpg?c=2",
   "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7950/AL25_Chair_Parker_Side__09427.1760974886.jpg?c=2",
   "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7951/AL25_Chair_Parker_Front__42041.1760974892.jpg?c=2",
+  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/original/image-manager/parker-pdp-detail-600x400.jpg",
+  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/original/image-manager/parker-pdp-wide-stripe.jpg",
 ];
 // Other Parker SKUs use Unsplash placeholders pending real per-SKU
 // product photography (the AL site only has Parker Chair shots that
