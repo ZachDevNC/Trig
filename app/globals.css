@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 html, body {
-  background: #faf8f4;
-  color: #1a1a1a;
+  background: #ffffff;
+  color: #111111;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* iPad-friendly: prevent text size jumps and pinch-zoom interfering with picker UI */
 html {
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
@@ -19,3 +20,7 @@ button, [role="button"] {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* Hide scrollbars on horizontal filter rows but keep functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

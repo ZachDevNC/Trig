@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import type { CartLine, CartLineSelections, Quote } from "./types";
+import type { CartLine, CoveringSelection, Quote } from "./types";
 
 type CartState = {
   client: string;
@@ -10,11 +10,20 @@ type CartState = {
   lines: CartLine[];
 };
 
+type AddLineArgs = {
+  frameId: string;
+  covering: CoveringSelection;
+  selections: Record<string, string>;
+  notes?: string;
+  wholesaleUnit: number;
+  retailUnit: number;
+};
+
 type CartCtx = CartState & {
   setClient: (v: string) => void;
   setRoom: (v: string) => void;
   setDesigner: (v: string) => void;
-  addLine: (productId: string, selections: CartLineSelections, notes?: string, unitPrice?: number) => void;
+  addLine: (args: AddLineArgs) => void;
   updateLine: (lineId: string, patch: Partial<Omit<CartLine, "lineId" | "addedAt">>) => void;
   removeLine: (lineId: string) => void;
   clearCart: () => void;
@@ -22,7 +31,7 @@ type CartCtx = CartState & {
 };
 
 const Ctx = createContext<CartCtx | null>(null);
-const STORAGE_KEY = "trig-showroom-cart-v1";
+const STORAGE_KEY = "trig-showroom-cart-v2";
 
 const empty: CartState = { client: "", room: "", designer: "", lines: [] };
 
@@ -47,26 +56,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const setRoom = useCallback((room: string) => setState((s) => ({ ...s, room })), []);
   const setDesigner = useCallback((designer: string) => setState((s) => ({ ...s, designer })), []);
 
-  const addLine = useCallback(
-    (productId: string, selections: CartLineSelections, notes?: string, unitPrice?: number) => {
-      setState((s) => ({
-        ...s,
-        lines: [
-          ...s.lines,
-          {
-            lineId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
-            productId,
-            selections,
-            quantity: 1,
-            notes,
-            unitPrice,
-            addedAt: Date.now(),
-          },
-        ],
-      }));
-    },
-    [],
-  );
+  const addLine = useCallback((args: AddLineArgs) => {
+    setState((s) => ({
+      ...s,
+      lines: [
+        ...s.lines,
+        {
+          lineId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+          frameId: args.frameId,
+          covering: args.covering,
+          selections: args.selections,
+          notes: args.notes,
+          wholesaleUnit: args.wholesaleUnit,
+          retailUnit: args.retailUnit,
+          quantity: 1,
+          addedAt: Date.now(),
+        },
+      ],
+    }));
+  }, []);
 
   const updateLine = useCallback((lineId: string, patch: Partial<Omit<CartLine, "lineId" | "addedAt">>) => {
     setState((s) => ({
@@ -87,6 +95,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       room: state.room || undefined,
       designer: state.designer || undefined,
       lines: state.lines,
+      totals: {
+        wholesale: state.lines.reduce((s, l) => s + l.wholesaleUnit * l.quantity, 0),
+        retail:    state.lines.reduce((s, l) => s + l.retailUnit    * l.quantity, 0),
+      },
       createdAt: Date.now(),
     }),
     [state],

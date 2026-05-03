@@ -2,100 +2,185 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { Product } from "@/lib/types";
+import type { Cover, CoveringSelection, Frame } from "@/lib/types";
 import { useCart } from "@/lib/cart";
-import { computeUnitPrice } from "@/lib/catalog";
+import { covers as allCovers, priceFor } from "@/lib/catalog";
+import { gradeToTier, tierLabel } from "@/lib/tiers";
+import { SwatchGrid } from "@/components/SwatchGrid";
 import { OptionPicker } from "@/components/OptionPicker";
 
 const formatUSD = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-export function ProductView({ product }: { product: Product }) {
+export function ProductView({ frame }: { frame: Frame }) {
   const cart = useCart();
+  const [coverId, setCoverId] = useState<string | undefined>();
+  const [coveringMode, setCoveringMode] = useState<"library" | "com" | "col">("library");
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [notes, setNotes] = useState("");
   const [justAdded, setJustAdded] = useState(false);
 
-  const missingRequired = product.options
+  const covering: CoveringSelection | null = useMemo(() => {
+    if (coveringMode === "com") return { kind: "com" };
+    if (coveringMode === "col") return { kind: "col" };
+    if (coverId) return { kind: "cover", coverId };
+    return null;
+  }, [coveringMode, coverId]);
+
+  const selectedCover: Cover | undefined = useMemo(
+    () => (coverId ? allCovers.find((c) => c.id === coverId) : undefined),
+    [coverId],
+  );
+
+  const price = useMemo(() => (covering ? priceFor(frame, covering) : null), [frame, covering]);
+
+  const missingRequired = (frame.options ?? [])
     .filter((g) => g.required && !selections[g.id])
     .map((g) => g.label);
+  const coverMissing = !covering;
 
-  const unitPrice = useMemo(() => computeUnitPrice(product, selections), [product, selections]);
-  const priceReady = !!product.priceFromOption && !!selections[product.priceFromOption];
+  const canAdd = !coverMissing && missingRequired.length === 0 && !!price;
 
   const handleAdd = () => {
-    if (missingRequired.length > 0) return;
-    cart.addLine(product.id, selections, notes || undefined, unitPrice);
+    if (!canAdd || !covering || !price) return;
+    cart.addLine({
+      frameId: frame.id,
+      covering,
+      selections,
+      notes: notes || undefined,
+      wholesaleUnit: price.wholesale,
+      retailUnit: price.retail,
+    });
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1800);
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-5 py-6">
-      <Link href="/" className="text-xs text-black/50 hover:text-black">← Catalog</Link>
+    <div className="max-w-6xl mx-auto px-6 pt-6 pb-32">
+      <Link href="/" className="text-xs text-black/45 hover:text-black tracking-wide">← Catalog</Link>
 
-      <div className="mt-4 grid md:grid-cols-2 gap-8">
-        <div className="md:sticky md:top-4 self-start">
+      <div className="mt-4 grid lg:grid-cols-[1.05fr_1fr] gap-10">
+        {/* Hero column */}
+        <div className="lg:sticky lg:top-6 self-start">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={product.heroImage}
-            alt={product.name}
-            className="w-full aspect-[4/3] object-cover rounded-xl ring-1 ring-black/10 bg-white"
+            src={frame.heroImage}
+            alt={frame.name}
+            className="w-full aspect-[4/3] object-cover rounded-2xl shadow-card bg-white"
           />
-          {product.configuratorUrl ? (
-            <a
-              href={product.configuratorUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-3 inline-block text-sm text-black/70 underline"
-            >
-              Open manufacturer 3D configurator ↗
-            </a>
+
+          {selectedCover ? (
+            <div className="mt-4 flex items-center gap-3 rounded-xl bg-white shadow-card p-3">
+              <span
+                className="block w-12 h-12 rounded-lg shrink-0"
+                style={
+                  selectedCover.imageUrl
+                    ? { background: `url(${selectedCover.imageUrl}) center/cover` }
+                    : { background: selectedCover.swatchHex ?? "#ddd" }
+                }
+                aria-hidden
+              />
+              <div className="text-sm leading-tight">
+                <div className="text-[11px] uppercase tracking-widest text-black/40">
+                  {tierLabel(gradeToTier(selectedCover.type, selectedCover.grade))}
+                </div>
+                <div className="font-medium">
+                  {selectedCover.cover} <span className="text-black/50">— {selectedCover.color}</span>
+                </div>
+              </div>
+            </div>
           ) : null}
 
-          {(product.sku || product.comYards) && (
-            <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-              {product.sku ? (
-                <>
-                  <dt className="text-black/50">SKU</dt>
-                  <dd className="font-mono">{product.sku}</dd>
-                </>
-              ) : null}
-              {product.comYards ? (
-                <>
-                  <dt className="text-black/50">C.O.M. yardage</dt>
-                  <dd>{product.comYards} yds</dd>
-                </>
-              ) : null}
-            </dl>
-          )}
+          <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+            <dt className="text-black/45">SKU</dt>
+            <dd className="font-mono">{frame.sku}</dd>
+            <dt className="text-black/45">C.O.M. yardage</dt>
+            <dd>{frame.comYards} yds</dd>
+          </dl>
 
-          {product.features?.length ? (
+          {frame.features?.length ? (
             <details className="mt-4 text-sm">
-              <summary className="cursor-pointer text-black/60">Standard features</summary>
-              <ul className="mt-2 grid gap-1 text-black/70 list-disc pl-5 text-[13px]">
-                {product.features.map((f) => <li key={f}>{f}</li>)}
+              <summary className="cursor-pointer text-black/55 select-none">Standard features</summary>
+              <ul className="mt-2 grid gap-1 text-black/65 list-disc pl-5 text-[13px]">
+                {frame.features.map((f) => <li key={f}>{f}</li>)}
               </ul>
             </details>
           ) : null}
         </div>
 
+        {/* Configuration column */}
         <div>
-          <p className="text-xs uppercase tracking-widest text-black/50">
-            {product.brand}{product.collection ? ` · ${product.collection}` : ""}
+          <p className="text-[11px] uppercase tracking-widest text-black/40">
+            {frame.brand} · {frame.collection}
           </p>
-          <h1 className="text-2xl font-semibold">{product.name}</h1>
-          {priceReady ? (
-            <p className="text-sm text-black/70 mt-1">
-              <span className="font-medium">{formatUSD(unitPrice)}</span>
-              <span className="text-black/40 ml-1.5 text-xs">wholesale</span>
-            </p>
-          ) : (
-            <p className="text-sm text-black/40 mt-1">Select covering &amp; grade for pricing</p>
-          )}
-          <p className="text-sm text-black/70 mt-3 max-w-prose">{product.shortDescription}</p>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tightish mt-1">{frame.name}</h1>
 
-          {product.options.map((group) => (
+          <div className="mt-2 flex items-baseline gap-3">
+            {price ? (
+              <>
+                <span className="text-2xl font-medium text-accent">{formatUSD(price.retail)}</span>
+                <span className="text-xs text-black/40">retail</span>
+              </>
+            ) : (
+              <span className="text-sm text-black/40">Choose a covering for pricing</span>
+            )}
+          </div>
+
+          <p className="text-sm text-black/65 mt-4 max-w-prose">{frame.shortDescription}</p>
+
+          {/* Covering picker */}
+          <section className="border-t border-black/[0.08] py-6 mt-6">
+            <div className="flex items-baseline justify-between mb-4">
+              <h3 className="text-[11px] uppercase tracking-widest text-black/40">Covering</h3>
+              <div className="flex gap-1.5">
+                {(["library", "com", "col"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => {
+                      setCoveringMode(m);
+                      if (m !== "library") setCoverId(undefined);
+                    }}
+                    className={`px-2.5 py-1 rounded-full text-[11px] transition ${
+                      coveringMode === m
+                        ? "bg-ink text-white"
+                        : "bg-white ring-1 ring-black/10 text-black/65 hover:ring-black/30"
+                    }`}
+                  >
+                    {m === "library" ? "AL Library" : m.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {coveringMode === "library" ? (
+              <SwatchGrid
+                covers={allCovers}
+                selectedId={coverId}
+                onSelect={(c) => setCoverId(c.id)}
+              />
+            ) : (
+              <div className="rounded-xl bg-bone p-5 text-sm text-black/75">
+                {coveringMode === "com" ? (
+                  <>
+                    <strong>C.O.M. — Customer's Own Material</strong>
+                    <p className="mt-1 text-black/65">
+                      Designer ships {frame.comYards} yds to AL. Priced at Fabric Grade I.
+                      Note specific fabric in the field below. Not recommended for patterned fabrics requiring flow matching.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <strong>C.O.L. — Customer's Own Leather</strong>
+                    <p className="mt-1 text-black/65">
+                      Designer provides hide spec to AL. Priced at Leather Grade D/F.
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+
+          {(frame.options ?? []).map((group) => (
             <OptionPicker
               key={group.id}
               group={group}
@@ -104,29 +189,33 @@ export function ProductView({ product }: { product: Product }) {
             />
           ))}
 
-          <section className="border-t border-black/10 py-6">
-            <h3 className="text-sm uppercase tracking-widest text-black/60 mb-3">Notes for vendor</h3>
+          <section className="border-t border-black/[0.08] py-6">
+            <h3 className="text-[11px] uppercase tracking-widest text-black/40 mb-3">Notes</h3>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              placeholder="e.g. specific leather color (Bisonte Saddle), contrast cushion fabric, delivery requirements"
-              className="w-full px-3 py-2 rounded-md bg-bone/60 ring-1 ring-black/10 focus:ring-black/40 outline-none text-sm"
+              placeholder="e.g. contrast cushion in Bisonte Saddle, deliver before June 1"
+              className="w-full px-3 py-2.5 rounded-lg bg-bone ring-1 ring-black/[0.06] focus:ring-accent/50 outline-none text-sm"
             />
           </section>
 
-          <div className="sticky bottom-20 md:bottom-24 mt-4">
-            {missingRequired.length > 0 ? (
-              <p className="text-xs text-amber-700 mb-2">
-                Choose: {missingRequired.join(", ")}
-              </p>
+          <div className="sticky bottom-20 md:bottom-24 mt-6">
+            {coverMissing ? (
+              <p className="text-xs text-accent mb-2">Select a covering to continue.</p>
+            ) : missingRequired.length > 0 ? (
+              <p className="text-xs text-accent mb-2">Choose: {missingRequired.join(", ")}</p>
             ) : null}
             <button
               onClick={handleAdd}
-              disabled={missingRequired.length > 0}
-              className="w-full py-4 rounded-lg bg-ink text-white text-sm font-medium disabled:opacity-50"
+              disabled={!canAdd}
+              className={`w-full py-4 rounded-full text-sm font-medium transition ${
+                canAdd
+                  ? "bg-accent hover:bg-accent-600 text-white shadow-card"
+                  : "bg-black/[0.06] text-black/35"
+              }`}
             >
-              {justAdded ? "Added to quote ✓" : "Add to quote"}
+              {justAdded ? "Added to quote ✓" : price ? `Add to quote — ${formatUSD(price.retail)}` : "Add to quote"}
             </button>
           </div>
         </div>
