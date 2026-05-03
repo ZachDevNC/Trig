@@ -39,9 +39,10 @@ const PARKER_OPTIONS = [
   },
 ];
 
-// Placeholder hero images. Swap with real product photos when uploaded.
+// Real American Leather product photography (sourced from americanleather.com).
+// Other Parker SKUs still use placeholders pending dedicated photos.
 const PARKER_HERO =
-  "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1600&q=80";
+  "https://cdn11.bigcommerce.com/s-y52856za8c/images/stencil/1280x1280/products/1501/7949/AL25_Chair_Parker_45__21938.1760974881.jpg?c=2";
 const SOFA_HERO =
   "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=80";
 const OTTOMAN_HERO =
