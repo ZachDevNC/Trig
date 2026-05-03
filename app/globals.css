@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background: #faf8f4;
+  color: #1a1a1a;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iPad-friendly: prevent text size jumps and pinch-zoom interfering with picker UI */
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+button, [role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+}
