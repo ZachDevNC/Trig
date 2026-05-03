@@ -1,41 +1,46 @@
-# Trig Showroom
+# AL Swatch Configurator — Project Folder
 
-iPad-first quote builder for the Trig Modern showroom. Designers tap an NFC tag on a product, configure options, and add to a client quote that gets exported back to the team.
+Hand-off folder for building Trig Modern's American Leather configurator with Claude Code.
 
-## Stack
-
-- Next.js 15 (App Router) + TypeScript + Tailwind
-- Catalog: JSON in `lib/catalog.ts` (v1). Designed to swap to Airtable later — `getProduct()` is the only call site that needs to change.
-- Cart state: React context + `localStorage` (`lib/cart.tsx`)
-- Quote submission: `POST /api/quote` (currently logs server-side; wire to email / Sheet / Airtable next)
-
-## Run locally
+## Open with Claude Code
 
 ```bash
-npm install
-npm run dev
-# open http://localhost:3000
+cd "Trig Build/AL_swatch_configurator"
+claude
 ```
 
-## NFC tag encoding
+Claude Code reads `CLAUDE.md` automatically. That's the brief.
 
-Each product page lives at `/p/<product-id>`. Encode that full URL onto each NFC tag (NTAG215 stickers, free "NFC Tools" app).
+## Folder contents
 
-Example: `https://your-domain.com/p/parker-chair`
+```
+AL_swatch_configurator/
+├── CLAUDE.md                    Project context (Claude Code reads this)
+├── README.md                    You are here
+├── data/                        Source data — read-only
+│   ├── swatches.json            664 unique swatches (primary)
+│   ├── swatches.csv             Same data, spreadsheet
+│   ├── swatches.sqlite          Same data, relational
+│   ├── covers_grade_lookup.csv  134 covers, grade column empty (Phase 2)
+│   └── al_pricebook.json        2,624 SKUs across 137 AL frame models
+├── demo/                        UX target
+│   └── AL_configurator_demo.html  Single-file HTML demo (open in browser)
+└── scripts/                     Re-runnable parsers (regenerate data)
+    ├── build_swatch_manifest.py
+    └── build_configurator_demo.py
+```
 
-## Adding products
+## What's done
 
-Until we wire up Airtable, edit `lib/catalog.ts`. The `Product` type lives in `lib/types.ts`.
+- 894 raw swatch exports from AL Brandfolder → 664 deduped, classified swatches
+- 134 unique covers identified
+- Pricing data (wholesale × 2.5 = retail) for every AL frame model
+- Visual MVP showing UX direction
 
-Option groups support three render styles:
-- `swatch` — color/fabric tiles in a grid (uses `swatch` hex color or image)
-- `tile`   — text tiles (good for arm style, base finish, swivel)
-- `select` — reserved for a future dropdown variant
+## What's needed
 
-## TODOs (next session)
+- Configurator UI/UX (web, stack TBD)
+- Grade column populated in `covers_grade_lookup.csv` (manual or PDF parse)
+- Image upload to a CDN with public URLs
 
-- Confirm real Parker chair option list with American Leather rep / spec sheet
-- Replace the placeholder hero image with a proper product photo
-- Pick a quote destination (email via Resend, Google Sheet via Apps Script, or Airtable record)
-- Migrate catalog to Airtable
-- Optional: embed manufacturer 3D configurator where available
+See `CLAUDE.md` for full brief.
